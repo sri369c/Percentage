@@ -1,19 +1,28 @@
-using System.Windows.Controls;
-using Wpf.Ui.Appearance;
+using System.Windows;
+using static Percentage.App.Properties.Settings;
 
-namespace Percentage.App;
-
-public sealed partial class MainWindow
+namespace Percentage.App
 {
-    public MainWindow()
+    public partial class MainWindow : Window
     {
-        SystemThemeWatcher.Watch(this);
-        InitializeComponent();
-        App.SnackBarService.SetSnackbarPresenter(SnackbarPresenter);
-    }
+        public MainWindow()
+        {
+            InitializeComponent();
 
-    internal void NavigateToPage<T>() where T : Page
-    {
-        NavigationView.Navigate(typeof(T));
+            // Restore window size from settings
+            if (Default.WindowWidth > 0 && Default.WindowHeight > 0)
+            {
+                this.Width = Default.WindowWidth;
+                this.Height = Default.WindowHeight;
+            }
+
+            // Save window size on resize
+            this.SizeChanged += (s, e) =>
+            {
+                Default.WindowWidth = (int)this.Width;
+                Default.WindowHeight = (int)this.Height;
+                Default.Save();
+            };
+        }
     }
 }
